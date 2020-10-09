@@ -15,14 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dhqms.views import startbuild
 from dhqms.views import simple_slow
 from dhqms.views import queryData
 from dhqms.views import syncbuild
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', startbuild),
     path('slow', simple_slow),
     path('querydata', queryData),
     path('syncbuild', syncbuild)

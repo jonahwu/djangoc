@@ -3,8 +3,10 @@ from django.http import JsonResponse
 import time
 from workers.tasks import add
 from workers.tasks import getdata
+from workers.tasks import getKeywords
 import celery
 from celery import uuid
+from workers import libcorpus
 
 
 
@@ -56,19 +58,28 @@ def queryData(request):
     return JsonResponse(response)
 
 def syncbuild(request):
-    bestModel="svm"
-    s="1"
-    o="1"
-    d="1"
-    rpn="1"
-
-    response = {
-        'msg':'best model: %s \n s:%s  o:%s  d:%s  rpn:%s '%(bestModel, s, o, d, rpn), # response message
-                's': s,
-                'o': o,
-                'd': d,
-                'rpn': rpn,
-                'bestmodel': bestModel,
-    }
+    task_id = uuid()
+    #result = getData.apply_async(args=[3, 7], expires=10, task_id=task_id)
+    #result = extractKeywords.apply_async(args=[3, 7], expires=6000, task_id=task_id)
+    result = getKeywords.apply_async(args=[task_id, 20], expires=6000, task_id=task_id)
+    result = celery.result.AsyncResult(task_id)
+    print(result.task_id)
+    time.sleep(1)
+    counter=0
+    while True:
+        print(result.status)
+        time.sleep(1)
+        if result.status=="SUCCESS":
+            counter = counter + 1
+            if counter >=3:
+                break;
+    print('------ result collection -----')
+    #print(result.info)
+    #keyword=result.info
+    #print(keyword)
+    tid=result.info
+    keyword = libcorpus.readKeyworkdFromStored(tid)
+    response= keyword
+    # we can return data to DH by using rest post
     return JsonResponse(response) # return response as JSON
 
