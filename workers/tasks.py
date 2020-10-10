@@ -8,6 +8,8 @@ import jieba
 from workers import libcorpus
 import json
 import requests
+from celery import current_task
+
 
 #broker = 'redis://127.0.0.1:6379'
 #backend = 'redis://127.0.0.1:6379/0'
@@ -38,6 +40,7 @@ def getKeywords(kid, topKnum):
     #jieba.enable_parallel(2)
     #topKnum=20
     print(kid, topKnum)
+    current_task.update_state(state='query api')
     apiurl='http://116.62.136.201:100/sQMS_Production_MESws_STD/wsInvoke.asmx/invokeSrv'
     headers = {'Content-type': 'application/json'}
     #request.POST('http://116.62.136.201:100/sQMS_Production_MESws_STD/wsInvoke.asmx/invokeSrv')
@@ -48,12 +51,14 @@ def getKeywords(kid, topKnum):
     allPhrase = libcorpus.getAllPhrase(r)
 
     #k=extractKeywords(types='intersection')
+    current_task.update_state(state='EXTRACT Keyword')
     k=libcorpus.extractKeywords(allPhrase=allPhrase)
     print('----extract result:----------')
     print(k)
     jsondata= {}
     jsondata['k']=k
     #filename='./cache/data.pkl'
+    current_task.update_state(state='store data')
     filename='./cache/'+kid+'.pkl'
     libcorpus.storePickle(jsondata, filename )
     return kid
