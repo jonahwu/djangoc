@@ -9,6 +9,7 @@ from workers import libcorpus
 import json
 import requests
 from celery import current_task
+from celery import uuid
 
 
 #broker = 'redis://127.0.0.1:6379'
@@ -36,9 +37,13 @@ def add(x, y):
     return x + y
 
 @app.task
-def getKeywords(kid, topKnum):
+def getKeywords(kid='', topKnum=0):
     #jieba.enable_parallel(2)
     #topKnum=20
+    if not kid:
+        kid=uuid()
+    if not topKnum:
+        topKnum=20
     print(kid, topKnum)
     current_task.update_state(state='query api')
     apiurl='http://116.62.136.201:100/sQMS_Production_MESws_STD/wsInvoke.asmx/invokeSrv'
