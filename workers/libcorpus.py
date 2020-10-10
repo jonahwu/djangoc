@@ -7,6 +7,8 @@ import nltk
 import re
 import jieba.posseg as pseg
 import pickle
+import celery
+from celery.result import AsyncResult
 
 def storePickle(data, filename):
     with open(filename, 'wb') as f:
@@ -144,3 +146,8 @@ def SendBack(k):
     #response = requests.post(url, data=json.dumps(payload), headers=headers)
 
     return True
+
+def getTaskIDStatus(tid):
+    #result = celery.result.AsyncResult(tid)
+    result = AsyncResult(tid)
+    return str(result.status)

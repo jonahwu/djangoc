@@ -7,6 +7,7 @@ from workers.tasks import getKeywords
 import celery
 from celery import uuid
 from workers import libcorpus
+from celery.result import AsyncResult
 
 
 
@@ -88,4 +89,8 @@ def getKeywordsByTaskID(request, tid):
     response = libcorpus.readKeyworkdFromStored(str(tid))
     return JsonResponse(response)
 
-
+def getTaskIDStatus(request, tid):
+    ret = libcorpus.getTaskIDStatus(str(tid))
+    response = {}
+    response['status']=ret
+    return JsonResponse(response)
