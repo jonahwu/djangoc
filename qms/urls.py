@@ -18,10 +18,12 @@ from django.urls import path
 from dhqms.views import simple_slow
 from dhqms.views import queryData
 from dhqms.views import syncbuild
+from dhqms.views import getKeywordsByTaskID
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('slow', simple_slow),
     path('querydata', queryData),
-    path('syncbuild', syncbuild)
+    path('syncbuild', syncbuild),
+    path('getkeywordbytaskid/<uuid:tid>', getKeywordsByTaskID)
 ]

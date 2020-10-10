@@ -83,3 +83,9 @@ def syncbuild(request):
     # we can return data to DH by using rest post
     return JsonResponse(response) # return response as JSON
 
+
+def getKeywordsByTaskID(request, tid):
+    response = libcorpus.readKeyworkdFromStored(str(tid))
+    return JsonResponse(response)
+
+
